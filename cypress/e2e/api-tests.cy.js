@@ -182,4 +182,27 @@ describe("API Tests", () => {
             });
         });
     });
+
+    ////////////////////////////// Avis //////////////////////////////
+    describe("Avis", () => {
+        it("Ajoute un avis", () => {
+            cy.request({
+                method: 'POST',
+                url: `${Cypress.config('apiUrl')}/reviews`,
+                headers: { Authorization: `Bearer ${authToken}` },
+                body: {
+                    title: 'Produit X',
+                    comment: 'Excellent produit',
+                    rating: 5
+                }                ,
+                failOnStatusCode: false
+            }).then((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body).to.have.property('title', 'Produit X');
+                expect(response.body).to.have.property('comment', 'Excellent produit');
+                expect(response.body).to.have.property('rating', 5);
+                cy.log(`Titre avis ajouté : ${response.body.title}, Commentaire avis ajouté : ${response.body.comment}, Note : ${response.body.rating}`);
+            });
+        });
+    });
 });
