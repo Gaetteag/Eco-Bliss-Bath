@@ -205,4 +205,22 @@ describe("API Tests", () => {
             });
         });
     });
+
+    ////////////////////////////// Vulnérabilité XSS //////////////////////////////
+    describe("Vulnérabilité XSS", () => {
+        it("Vulnérabilité XSS sur la route d'ajout au panier", () => {
+            cy.request({
+            method: 'POST',
+            url: 'http://localhost:8081/orders/add',
+            headers: { Authorization: `Bearer ${authToken}` },
+            body: {
+                product: 5,
+                quantity: "<script>alert('XSS')</script>" // injection du script
+            },
+            failOnStatusCode: false
+            }).then((response) => {
+                expect(response.status).to.eq(500);
+            });
+        });
+    });
 });
