@@ -140,4 +140,20 @@ describe("Panier", () => {
         });
     });
   });
+
+  it("Ne permet pas d'ajouter un produit en rupture de stock au panier", () => {
+    navigateToProductsPage();
+  
+    findProduct('withoutStock').then(() => {
+      cy.getBySel('detail-product-stock')
+        .invoke('text')
+        .then((text) => {
+          const stock = extractNumber(text);
+          if (stock < 1) {
+            cy.getBySel('detail-product-form')
+            .should('have.class', 'ng-invalid');
+          }
+        });
+    });
+  });
 });
