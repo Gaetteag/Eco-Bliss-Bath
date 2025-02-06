@@ -111,4 +111,16 @@ describe("Panier", () => {
         .should('have.class', 'ng-invalid');
     });
   });
+
+  it("Ne permet pas d'ajouter plus de 20 articles d'un même produit au panier", () => {
+    navigateToProductsPage();
+
+    findProduct('withStock', 21).then(() => {
+      cy.getBySel('detail-product-quantity')
+        .clear()
+        .type('21');
+      cy.getBySel('detail-product-form')
+        .should('have.class', 'ng-invalid');
+    });
+  });
 });
