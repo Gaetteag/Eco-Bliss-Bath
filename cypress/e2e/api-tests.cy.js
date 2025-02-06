@@ -139,4 +139,47 @@ describe("API Tests", () => {
             });
         });
     });
+
+    ////////////////////////////// Login //////////////////////////////
+    describe("Login", () => {
+        it("Connexion réussie avec des identifiants valides", () => {
+            cy.request({
+                method: 'POST', 
+                url: `${Cypress.config('apiUrl')}/login`,
+                body: {
+                    username: userData.userEmail,
+                    password: userData.userPassword
+                }
+            }).then((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body).to.have.property('token');
+            });
+        });
+
+        it("Echec de connexion avec un JSON invalide", () => {
+            cy.request({
+                method: 'POST',
+                url: `${Cypress.config('apiUrl')}/login`,
+                body: "invalid json",
+                headers: { 'Content-Type': 'application/json' },
+                failOnStatusCode: false
+            }).then((response) => {
+                expect(response.status).to.eq(400);
+            });
+        });
+        
+        it("Echec de connexion avec un mauvais mot de passe", () => {
+            cy.request({
+                method: 'POST',
+                url: `${Cypress.config('apiUrl')}/login`,
+                body: {
+                    username: userData.userEmail,
+                    password: userData.userPasswordFalse
+                },
+                failOnStatusCode: false
+            }).then((response) => {
+                expect(response.status).to.eq(401);
+            });
+        });
+    });
 });
