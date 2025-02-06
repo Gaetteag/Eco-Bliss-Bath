@@ -87,4 +87,28 @@ describe("Panier", () => {
         });
     });
   });
+
+  it("Ne permet pas d'ajouter une quantité négative au panier", () => {
+    navigateToProductsPage();
+
+    findProduct('withStock').then(() => {
+      cy.getBySel('detail-product-quantity')
+        .clear()
+        .type('-1');
+      cy.getBySel('detail-product-form')
+        .should('have.class', 'ng-invalid');
+    });
+  });
+
+    it("Ne permet pas d'ajouter une quantité nulle au panier", () => {
+      navigateToProductsPage('withStock');
+
+    findProduct('withStock').then(() => {
+      cy.getBySel('detail-product-quantity')
+        .clear()
+        .type('0');
+      cy.getBySel('detail-product-form')
+        .should('have.class', 'ng-invalid');
+    });
+  });
 });
