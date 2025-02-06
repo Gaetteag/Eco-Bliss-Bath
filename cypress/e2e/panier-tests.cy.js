@@ -123,4 +123,21 @@ describe("Panier", () => {
         .should('have.class', 'ng-invalid');
     });
   });
+
+  it("Ne permet pas d'ajouter une quantité supérieure au stock disponible", () => {
+    navigateToProductsPage();
+
+    findProduct('withStock').then(() => {
+      cy.getBySel('detail-product-stock')
+        .invoke('text')
+        .then((text) => {
+          const availableStock = extractNumber(text);
+          cy.getBySel('detail-product-quantity')
+            .clear()
+            .type(availableStock + 1);
+          cy.getBySel('detail-product-form')
+          .should('have.class', 'ng-invalid');
+        });
+    });
+  });
 });
