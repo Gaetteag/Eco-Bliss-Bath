@@ -191,9 +191,9 @@ describe("API Tests", () => {
                 url: `${Cypress.config('apiUrl')}/reviews`,
                 headers: { Authorization: `Bearer ${authToken}` },
                 body: {
+                    rating: 5,
                     title: 'Produit X',
-                    comment: 'Excellent produit',
-                    rating: 5
+                    comment: 'Excellent produit'
                 }                ,
                 failOnStatusCode: false
             }).then((response) => {
@@ -201,25 +201,42 @@ describe("API Tests", () => {
                 expect(response.body).to.have.property('title', 'Produit X');
                 expect(response.body).to.have.property('comment', 'Excellent produit');
                 expect(response.body).to.have.property('rating', 5);
-                cy.log(`Titre avis ajouté : ${response.body.title}, Commentaire avis ajouté : ${response.body.comment}, Note : ${response.body.rating}`);
+                cy.log(`Note : ${response.body.rating}, Titre avis ajouté : ${response.body.title}, Commentaire avis ajouté : ${response.body.comment}`);
             });
         });
     });
 
     ////////////////////////////// Vulnérabilité XSS //////////////////////////////
     describe("Vulnérabilité XSS", () => {
-        it("Vulnérabilité XSS sur la route d'ajout au panier", () => {
+        it("Vulnérabilité XSS sur le champ titre d'un avis", () => {
             cy.request({
             method: 'POST',
-            url: 'http://localhost:8081/orders/add',
+            url: `${Cypress.config('apiUrl')}/reviews`,
             headers: { Authorization: `Bearer ${authToken}` },
             body: {
-                product: 5,
-                quantity: "<script>alert('XSS')</script>" // injection du script
+                rating: 5,
+                title: 'Titre produit',
+                comment: "<script>alert('XSS')</script>"
             },
             failOnStatusCode: false
             }).then((response) => {
-                expect(response.status).to.eq(500);
+                expect(response.status).not.to.eq(200);
+            });
+        });
+
+        it("Vulnérabilité XSS sur le champ commentaire d'un avis", () => {
+            cy.request({
+                method: 'POST',
+                url: `${Cypress.config('apiUrl')}/reviews`,
+                headers: { Authorization: `Bearer ${authToken}` },
+                body: {
+                    rating: 5,
+                    title: "<script>alert('XSS')</script>",
+                    comment: 'Commentaire produit'
+                },
+                failOnStatusCode: false
+            }).then((response) => {
+                expect(response.status).not.to.eq(200);
             });
         });
     });
