@@ -98,4 +98,45 @@ describe("API Tests", () => {
             });
         });
     });
+
+    ////////////////////////////// Fiche produit //////////////////////////////
+    describe("Fiche produit", () => {
+        it("Récupère toutes les fiches des produits", () => {
+            cy.request({
+                method: "GET",
+                url: `${Cypress.config('apiUrl')}/products`
+            }).then((response) => {
+                expect(response.status).to.eq(200);
+                response.body.forEach((product) => {
+                    cy.request({
+                        method: "GET",
+                        url: `${Cypress.config('apiUrl')}/products/${product.id}`
+                    }).then((response) => {
+                        expect(response.status).to.eq(200);
+                        expect(response.body).to.have.property("id", product.id).that.is.a('number');
+                        expect(response.body).to.have.property("name").that.is.a('string');
+                        expect(response.body).to.have.property("availableStock").that.is.a('number');
+                        expect(response.body).to.have.property("skin").that.is.a('string');
+                        expect(response.body).to.have.property("aromas").that.is.a('string');
+                        expect(response.body).to.have.property("ingredients").that.is.a('string');
+                        expect(response.body).to.have.property("description").that.is.a('string');
+                        expect(response.body).to.have.property("price").that.is.a('number');
+                        expect(response.body).to.have.property("picture").that.is.a('string');
+                        expect(response.body).to.have.property("varieties").that.is.a('number');
+        
+                        cy.log(`id : ${response.body.id}`);
+                        cy.log(`name : ${response.body.name}`);
+                        cy.log(`availableStock : ${response.body.availableStock}`);
+                        cy.log(`skin : ${response.body.skin}`);
+                        cy.log(`aromas : ${response.body.aromas}`);
+                        cy.log(`ingredients : ${response.body.ingredients}`);
+                        cy.log(`description : ${response.body.description}`);
+                        cy.log(`price : ${response.body.price}€`);
+                        cy.log(`picture : ${response.body.picture}`);
+                        cy.log(`varieties : ${response.body.varieties}`);
+                    });
+                });
+            });
+        });
+    });
 });
